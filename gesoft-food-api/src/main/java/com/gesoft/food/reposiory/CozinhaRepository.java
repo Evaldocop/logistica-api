@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gesoft.food.domain.model.Cozinha;
 
@@ -20,4 +21,18 @@ public class CozinhaRepository  {
 		return manager.createQuery("from Cozinha", Cozinha.class).getResultList();
 	}
 
+	@Transactional
+	public Cozinha adicionarAtualizar(Cozinha cozinha) {
+		//insere ou atualiza se já existir uma pk correspondente
+		return manager.merge(cozinha);
+	}
+	
+	public Cozinha buscarPorId(Long id) {
+		return manager.find(Cozinha.class, id);
+	}
+	@Transactional
+	public void remover(Cozinha cozinha) {
+		cozinha = buscarPorId(cozinha.getId()); 
+		manager.remove(cozinha);
+	}
 }
