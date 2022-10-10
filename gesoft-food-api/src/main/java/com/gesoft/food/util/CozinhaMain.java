@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.gesoft.food.GesoftFoodApiApplication;
 import com.gesoft.food.domain.model.Cozinha;
-import com.gesoft.food.domain.reposiory.CozinhaRepository;
+import com.gesoft.food.infraestruture.repository.CozinhaRepository;
 
 public class CozinhaMain {
 	public static void main(String[] args) {
@@ -22,8 +22,8 @@ public class CozinhaMain {
 		cozinha.setNome("Brasileira");
 		Cozinha cozinha2= new Cozinha();
 		cozinha2.setNome("Japonesa");
-		cozinhaRepository.adicionarAtualizar(cozinha);
-		cozinhaRepository.adicionarAtualizar(cozinha2);
+		cozinhaRepository.salvarAtualizar(cozinha);
+		cozinhaRepository.salvarAtualizar(cozinha2);
 		
 		
 		List<Cozinha> listCoz = cozinhaRepository.listar();
