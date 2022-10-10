@@ -1,4 +1,4 @@
-package com.gesoft.food.reposiory;
+package com.gesoft.food.util;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 
 import com.gesoft.food.GesoftFoodApiApplication;
 import com.gesoft.food.domain.model.Cozinha;
+import com.gesoft.food.domain.reposiory.CozinhaRepository;
 
 public class CozinhaMain {
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.gesoft.food.reposiory;
+package com.gesoft.food.domain.reposiory;
 
 import java.util.List;
 
