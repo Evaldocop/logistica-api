@@ -8,7 +8,8 @@ import org.springframework.context.ApplicationContext;
 
 import com.gesoft.food.GesoftFoodApiApplication;
 import com.gesoft.food.domain.model.Cozinha;
-import com.gesoft.food.infraestruture.repository.CozinhaRepository;
+import com.gesoft.food.domain.reposiory.CozinhaRepository;
+import com.gesoft.food.infraestruture.repository.CozinhaRepositoryImpl;
 
 public class CozinhaMain {
 	public static void main(String[] args) {
