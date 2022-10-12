@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gesoft.food.domain.exception.EntidadeEmUsoException;
+import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cozinha;
 import com.gesoft.food.domain.reposiory.CozinhaRepository;
+import com.gesoft.food.domain.service.CozinhaService;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
@@ -31,6 +34,9 @@ import ch.qos.logback.core.joran.util.beans.BeanUtil;
 @RequestMapping("/cozinhas")
 public class CozinhaController {
 
+	@Autowired
+	private CozinhaService cozinhaService;
+	
 	@Autowired
 	private CozinhaRepository cozinhaRepozitory;
 
@@ -66,25 +72,24 @@ public class CozinhaController {
 		if (cozinhaAtual != null) {
 			// param >3 inabilita a mudança
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			cozinhaRepozitory.salvarAtualizar(cozinhaAtual);
+			cozinhaService.salvarAtualizar(cozinhaAtual);
 			return ResponseEntity.ok(cozinhaAtual);
 		} else
 			return ResponseEntity.notFound().build();
 
 	}
 
-	@DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{cozinhaId}")
+	@DeleteMapping("/{cozinhaId}")
 	private ResponseEntity<Cozinha> remover(@PathVariable("cozinhaId") Long cozinhaId) {
 		try {
-			Cozinha cozinhaBD = cozinhaRepozitory.buscarPorId(cozinhaId);
-			if (cozinhaBD != null) {
-				cozinhaRepozitory.remover(cozinhaBD);
-				return ResponseEntity.noContent().build();
-			} else
-				return ResponseEntity.notFound().build();
-		} catch (DataIntegrityViolationException e) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		   cozinhaService.excluir(cozinhaId);
+		   return ResponseEntity.noContent().build();
+		}catch(EntidadeEmUsoException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		}catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.notFound().build();
 		}
+		
 	}
 
 }
