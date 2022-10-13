@@ -7,8 +7,8 @@ import com.gesoft.food.domain.model.Estado;
 public interface EstadoRepository {
 
 	List<Estado> listar();
-	Estado buscar(Long id);
-	Estado salvar(Estado estado);
-	void remover(Estado estado);
+	Estado buscarPorId(Long id);
+	Estado salvarAtualizar(Estado estado);
+	void remover(Long estadoId);
 	
 }
