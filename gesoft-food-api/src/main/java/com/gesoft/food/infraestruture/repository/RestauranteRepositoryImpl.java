@@ -34,9 +34,9 @@ public class RestauranteRepositoryImpl  implements RestauranteRepository{
 	}
 	@Override
 	@Transactional
-	public void remover(Restaurante restaurante) {
-		restaurante = buscarPorId(restaurante.getId()); 
-		manager.remove(restaurante);
+	public void remover(Long restauranteID) {
+		
+		manager.remove(restauranteID);
 	}
 
 }
