@@ -1,10 +1,10 @@
 package com.gesoft.food.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cozinha;
-import com.gesoft.food.domain.reposiory.CozinhaRepository;
 import com.gesoft.food.domain.service.CozinhaService;
-
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 //GET /cozinhas HTTP 1.1
 
@@ -37,22 +34,18 @@ public class CozinhaController {
 	@Autowired
 	private CozinhaService cozinhaService;
 	
-	@Autowired
-	private CozinhaRepository cozinhaRepozitory;
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	List<Cozinha> listar() {
-		return cozinhaRepozitory.listar();
+		return cozinhaService.listar();
 	}
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{cozinhaId}")
 	private ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long cozinhaId) {
-		Cozinha cozinha = cozinhaRepozitory.buscarPorId(cozinhaId);
-		// return ResponseEntity.status(HttpStatus.CREATED).body(cozinha);
-		// return ResponseEntity.ok(cozinha);
-		if (cozinha != null)
-			return ResponseEntity.ok(cozinha);
+		Optional<Cozinha> cozinha = cozinhaService.buscarPorId(cozinhaId);
+		if (cozinha.isPresent())
+			return ResponseEntity.ok(cozinha.get());
 		else
 			return ResponseEntity.notFound().build();
 	}
@@ -60,34 +53,34 @@ public class CozinhaController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
 	private Cozinha adicionar(@RequestBody Cozinha cozinha) {
-		return cozinhaRepozitory.salvarAtualizar(cozinha);
+		return cozinhaService.save(cozinha);
 
 	}
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{cozinhaId}")
 	private ResponseEntity<Cozinha> atualizar(@PathVariable("cozinhaId") Long cozinhaId, @RequestBody Cozinha cozinha) {
-		Cozinha cozinhaAtual = cozinhaRepozitory.buscarPorId(cozinhaId);
+		Optional<Cozinha> cozinhaAtual = cozinhaService.buscarPorId(cozinhaId);
 
-		if (cozinhaAtual != null) {
+		if (cozinhaAtual.isPresent()) {
 			// param >3 inabilita a mudança
-			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			cozinhaService.salvarAtualizar(cozinhaAtual);
-			return ResponseEntity.ok(cozinhaAtual);
+			BeanUtils.copyProperties(cozinha, cozinhaAtual.get(), "id");
+			Cozinha cozinhaSalva=cozinhaService.save(cozinhaAtual.get());
+			return ResponseEntity.ok(cozinhaSalva);
 		} else
 			return ResponseEntity.notFound().build();
 
 	}
 
 	@DeleteMapping("/{cozinhaId}")
-	private ResponseEntity<Cozinha> remover(@PathVariable("cozinhaId") Long cozinhaId) {
+	private ResponseEntity<?> remover(@PathVariable("cozinhaId") Long cozinhaId) {
 		try {
 		   cozinhaService.excluir(cozinhaId);
 		   return ResponseEntity.noContent().build();
 		}catch(EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 		
 	}

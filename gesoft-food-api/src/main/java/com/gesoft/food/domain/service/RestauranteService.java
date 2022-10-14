@@ -18,15 +18,13 @@ public class RestauranteService {
 	@Autowired
 	private RestauranteRepository RestauranteRepository;
 	@Autowired
-	private CozinhaRepository cozinhaRepozitory;
+	private CozinhaService cozinhaService;
 	
 	public Restaurante salvarAtualizar(Restaurante restaurante) {
 		Long cozinhaId=restaurante.getCozinha().getId();
-		Cozinha cozinha = cozinhaRepozitory.buscarPorId(cozinhaId);
-		if(cozinha==null) {
-			throw new EntidadeNaoEncontradaException(
-					String.format("Não existe conzinha com id %d", cozinhaId));
-		}
+		Cozinha cozinha = cozinhaService.buscarPorId(cozinhaId).orElseThrow(()-> new EntidadeNaoEncontradaException(
+				String.format("Não existe conzinha com id %d", cozinhaId)));
+		
 		
 		restaurante.setCozinha(cozinha);
 		return RestauranteRepository.salvarAtualizar(restaurante);
