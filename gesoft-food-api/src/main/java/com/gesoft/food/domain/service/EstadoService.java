@@ -30,9 +30,9 @@ public class EstadoService {
 			estadoRepository.remover(estadoId);
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-					String.format("Cidade de código %d não pode ser removida, pois está em uso.", estadoId));
+					String.format("Estado de código %d não pode ser removida, pois está em uso.", estadoId));
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(String.format("Cidade com código %d não encontrada.", estadoId));
+			throw new EntidadeNaoEncontradaException(String.format("Estado com código %d não encontrada.", estadoId));
 		}
 	}
 

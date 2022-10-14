@@ -6,12 +6,14 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gesoft.food.domain.model.Permissao;
 import com.gesoft.food.domain.reposiory.PermissaoRepository;
 
-@Component
+
+@Repository
 public class PermissaoRepositoryImpl implements PermissaoRepository {
 
 	@PersistenceContext
