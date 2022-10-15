@@ -1,6 +1,7 @@
 package com.gesoft.food.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,11 @@ public class EstadoController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{estadoId}")
 	public ResponseEntity<?> alterar(@PathVariable Long estadoId, @RequestBody Estado estado) {
-		Estado estadoAtual = estadoService.buscarPorId(estadoId);
+		Optional<Estado> estadoAtual = estadoService.buscarPorId(estadoId);
 
-		if (estadoAtual != null) {
-			BeanUtils.copyProperties(estado, estadoAtual, "id");
-			estadoService.salvarAtualizar(estadoAtual);
+		if (estadoAtual.isPresent()) {
+			BeanUtils.copyProperties(estado, estadoAtual.get(), "id");
+			estadoService.salvarAtualizar(estadoAtual.get());
 			return ResponseEntity.ok(estadoAtual);
 		} else {
 			return ResponseEntity.notFound().build();

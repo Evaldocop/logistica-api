@@ -1,6 +1,7 @@
 package com.gesoft.food.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,24 +36,21 @@ public class RestauranteController {
 	@Autowired
 	private RestauranteService restauranteService;
 
-	@Autowired
-	private RestauranteRepository restauranteRepozitory;
-
+	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	List<Restaurante> listar() {
-		return restauranteRepozitory.listar();
+		return restauranteService.listar();
 	}
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{RestauranteId}")
-	private ResponseEntity<Restaurante> buscar(@PathVariable("RestauranteId") Long RestauranteId) {
-		Restaurante Restaurante = restauranteRepozitory.buscarPorId(RestauranteId);
-		// return ResponseEntity.status(HttpStatus.CREATED).body(Restaurante);
-		// return ResponseEntity.ok(Restaurante);
-		if (Restaurante != null)
-			return ResponseEntity.ok(Restaurante);
+	private ResponseEntity<?> buscar(@PathVariable("RestauranteId") Long restauranteId) {
+		Optional<Restaurante> restaurante = restauranteService.buscarPorId(restauranteId);
+		if (restaurante.isPresent())
+			return ResponseEntity.ok(restaurante.get());
 		else
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+					String.format("Reataurante com id %d, não foi localizado", restauranteId));
 	}
 
 	@PostMapping
@@ -71,14 +69,14 @@ public class RestauranteController {
 	@PutMapping("/{restauranteId}")
 	private ResponseEntity<?> alterar(@PathVariable("restauranteId") Long restauranteId,
 			@RequestBody Restaurante restaurante) {
-		Restaurante restauranteAtual = restauranteRepozitory.buscarPorId(restauranteId);
+		Optional<Restaurante> restauranteAtual = restauranteService.buscarPorId(restauranteId);
 
-		if (restauranteAtual != null) {
+		if (restauranteAtual.isPresent()) {
 			try {
 				// param >3 inabilita a mudança
-				BeanUtils.copyProperties(restaurante, restauranteAtual, "id");
-				restauranteService.salvarAtualizar(restauranteAtual);
-				return ResponseEntity.ok(restauranteAtual);
+				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+				restauranteService.salvarAtualizar(restauranteAtual.get());
+				return ResponseEntity.ok(restauranteAtual.get());
 			} catch (EntidadeNaoEncontradaException e) {
 				return ResponseEntity.badRequest().body(e.getMessage());
 			}
@@ -105,8 +103,8 @@ public class RestauranteController {
 	 * }
 	 */
 
-	@DeleteMapping("/{RestauranteId}")
-	private ResponseEntity<Restaurante> remover(@PathVariable("RestauranteId") Long RestauranteId) {
+	@DeleteMapping("/{restauranteId}")
+	private ResponseEntity<Restaurante> remover(@PathVariable("restauranteId") Long RestauranteId) {
 		try {
 			restauranteService.excluir(RestauranteId);
 			return ResponseEntity.noContent().build();

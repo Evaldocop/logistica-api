@@ -1,17 +1,15 @@
 package com.gesoft.food.domain.reposiory;
 
 
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.gesoft.food.domain.model.Permissao;
 
 
+@Repository
+public interface PermissaoRepository extends JpaRepository<Permissao, Long> {
 
-public interface PermissaoRepository {
 
-	List<Permissao> listar();
-	Permissao buscar(Long id);
-	Permissao salvar(Permissao permissao);
-	void remover(Permissao permissao);
 	
 }

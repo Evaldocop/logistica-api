@@ -11,38 +11,38 @@ import org.springframework.stereotype.Service;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cidade;
-import com.gesoft.food.domain.model.Estado;
-import com.gesoft.food.domain.reposiory.CidadeRepository;
+import com.gesoft.food.domain.model.Permissao;
+import com.gesoft.food.domain.reposiory.PermissaoRepository;
 
 @Service
-public class CidadeService {
+public class PermissaoService {
 
 	@Autowired
-	private CidadeRepository cidadeRepository;
+	private PermissaoRepository permissaoRepository;
 
-	public Cidade salvarAtualizar(Cidade cidade) {
-		return cidadeRepository.save(cidade);
+	public Permissao salvarAtualizar(Permissao permissao) {
+		return permissaoRepository.save(permissao);
 	}
 
-	public void excluir(Long cidadeId) {
+	public void excluir(Long permissaoId) {
 		try { // Cozinha cozinhaBD =estadoRepository.buscarPorId(estadoId);
 
-			cidadeRepository.deleteById(cidadeId);
+			permissaoRepository.deleteById(permissaoId);
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-					String.format("Cidade de código %d não pode ser removida, pois está em uso.", cidadeId));
+					String.format("Permissão de código %d não pode ser removida, pois está em uso.", permissaoId));
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(String.format("Cidade com código %d não encontrada.", cidadeId));
+			throw new EntidadeNaoEncontradaException(String.format("Permissão com código %d não encontrada.", permissaoId));
 		}
 	}
 
-	public List<Cidade> listar() {
+	public List<Permissao> listar() {
 		// TODO Auto-generated method stub
-		return cidadeRepository.findAll();
+		return permissaoRepository.findAll();
 	}
 	
-	public Optional<Cidade> buscarPorId(Long cidadeId) {
-		return cidadeRepository.findById(cidadeId);
+	public Optional<Permissao> buscarPorId(Long permissaoId) {
+		return permissaoRepository.findById(permissaoId);
 	}
 
 }
