@@ -1,5 +1,6 @@
 package com.gesoft.food.api.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,8 +40,19 @@ public class RestauranteController {
 
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	List<Restaurante> listar() {
+	private List<Restaurante> listar() {
 		return restauranteService.listar();
+	}
+	
+	
+	@GetMapping("/restaurantesPorTaxa")
+	public List<Restaurante> findByTaxaBetween(@RequestParam ( value ="taxaInicial" ) BigDecimal taxaInicial,@RequestParam (value = "taxaFinal") BigDecimal taxaFinal){
+		return restauranteService.findByTaxaBetween(taxaInicial, taxaFinal);
+	}
+	
+	@GetMapping("/restaurantesNomeCozinhaId")
+	public List<Restaurante> findByTaxaBetween(@RequestParam ( value ="nome" ) String nome,@RequestParam (value = "cozinhaId") Long cozinhaId){
+		return restauranteService.consultarLikeAndCozinhaId(nome, cozinhaId);
 	}
 
 	@ResponseStatus(value = HttpStatus.OK)
@@ -115,5 +128,26 @@ public class RestauranteController {
 		}
 
 	}
+	
+	@GetMapping("/primeiroRestaurantePorNome")
+	public ResponseEntity<Restaurante> findFirstRestauranteByNomeContains(@RequestParam ( value ="nome" ) String nome){
+		return ResponseEntity.ok(restauranteService.findFirstRestauranteByNomeContains(nome).get()) ;
+	}
+	
+	@GetMapping("/doisPrimeiroRestaurantePorNome")
+	public List<Restaurante> findTop2ByByNomeContains(@RequestParam ( value ="nome" ) String nome){
+		return restauranteService.findTop2ByByNomeContains(nome);
+	}
+	
+	@GetMapping("/countRestauranteCozinhaId")
+	public ResponseEntity<?> countByCozinhaId(@RequestParam ( value ="cozinhaId" ) Long cozinhaId){
+		return ResponseEntity.status(HttpStatus.OK).body(restauranteService.countByCozinhaId(cozinhaId)) ;
+	}
+	@GetMapping("/existRestaurantePorNome")
+	public ResponseEntity<?> existsByNome(@RequestParam ( value ="nome" ) String nome){
+		return ResponseEntity.status(HttpStatus.OK).body(restauranteService.existsByNome(nome)) ;
+	}
+
+
 
 }

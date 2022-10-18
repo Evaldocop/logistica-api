@@ -28,8 +28,13 @@ public class CozinhaService {
 	public Optional<Cozinha> buscarPorId(Long id){
 		return cozinhaRepository.findById(id);
 	}
+	public Optional<Cozinha> buscarPorNome(String nome){
+		return cozinhaRepository.findBynome(nome);
+	}
 
-	
+	public List<Cozinha> findBynomeContains(String nome){
+		return cozinhaRepository.findBynomeContains(nome);
+	}
 	public Cozinha save(Cozinha cozinha){
 		return  cozinhaRepository.save(cozinha);
 	}

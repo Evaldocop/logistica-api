@@ -34,16 +34,35 @@ public class CozinhaController {
 	@Autowired
 	private CozinhaService cozinhaService;
 	
+	
+	
+	
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	List<Cozinha> listar() {
 		return cozinhaService.listar();
 	}
+	
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE,value = "/listaPorLikeNome/{nome}")
+	List<Cozinha> listarPorLikeNome(@PathVariable("nome") String nome) {
+		return cozinhaService.findBynomeContains(nome);
+	}
+
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{cozinhaId}")
 	private ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") Long cozinhaId) {
 		Optional<Cozinha> cozinha = cozinhaService.buscarPorId(cozinhaId);
+		if (cozinha.isPresent())
+			return ResponseEntity.ok(cozinha.get());
+		else
+			return ResponseEntity.notFound().build();
+	}
+	
+	@ResponseStatus(value = HttpStatus.OK)
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/buscarPorNome/{nome}")
+	private ResponseEntity<Cozinha> buscarPorNome(@PathVariable("nome") String nome) {
+		Optional<Cozinha> cozinha = cozinhaService.buscarPorNome(nome);
 		if (cozinha.isPresent())
 			return ResponseEntity.ok(cozinha.get());
 		else
