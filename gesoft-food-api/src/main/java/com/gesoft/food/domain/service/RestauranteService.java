@@ -31,11 +31,11 @@ public class RestauranteService {
 		return restauranteRepository.findByTaxaBetween(taxaInicial, taxaFinal);
 	}
 
-	/*
-	 * public List<Restaurante> findByNomeContainsAndCozinhaId(String nome, Long
-	 * cozinhaId) { return
-	 * restauranteRepository.findByNomeContainsAndCozinhaId(nome, cozinhaId); }
-	 */
+	
+	  public List<Restaurante> findByNomeContainsAndCozinhaId(String nome, Long
+	  cozinhaId) { return
+	  restauranteRepository.findByNomeContainsAndCozinhaId(nome, cozinhaId); }
+	 
 	
 	public List<Restaurante> consultarLikeAndCozinhaId(String nome, Long cozinhaId) {
 		return restauranteRepository.findByNomeContainsAndCozinhaId(nome, cozinhaId);
