@@ -28,7 +28,7 @@ public class RestauranteService {
 	}
 
 	public List<Restaurante> findByTaxaBetween(BigDecimal taxaInicial, BigDecimal taxaFinal) {
-		return restauranteRepository.findByTaxaBetween(taxaInicial, taxaFinal);
+		return restauranteRepository.findByTaxaFreteBetween(taxaInicial, taxaFinal);
 	}
 
 	
@@ -84,5 +84,8 @@ public class RestauranteService {
 		return restauranteRepository.existsByNome(nome);
 	}
 	
-
+public  List<Restaurante> find(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal){
+	return restauranteRepository.find(nome, taxaFreteInicial, taxaFreteFinal);
+	
+}
 }

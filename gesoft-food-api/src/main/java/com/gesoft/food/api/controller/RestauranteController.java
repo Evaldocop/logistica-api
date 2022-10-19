@@ -50,6 +50,12 @@ public class RestauranteController {
 		return restauranteService.findByTaxaBetween(taxaInicial, taxaFinal);
 	}
 	
+	
+	@GetMapping("/restaurantesPorNomeTaxa")
+	public List<Restaurante> restaurantesPorNomeFrete(String nome ,BigDecimal taxaInicial,BigDecimal taxaFinal){
+		return restauranteService.find(nome,taxaInicial, taxaFinal);
+	}
+	
 	@GetMapping("/restaurantesNomeCozinhaId")
 	public List<Restaurante> findByTaxaBetween(@RequestParam ( value ="nome" ) String nome,@RequestParam (value = "cozinhaId") Long cozinhaId){
 		return restauranteService.consultarLikeAndCozinhaId(nome, cozinhaId);

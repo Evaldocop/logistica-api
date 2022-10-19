@@ -12,11 +12,11 @@ import org.springframework.stereotype.Repository;
 import com.gesoft.food.domain.model.Restaurante;
 
 @Repository
-public interface RestauranteRepository extends JpaRepository<Restaurante, Long>{
+public interface RestauranteRepository extends JpaRepository<Restaurante, Long> , RestauranteRepositoryQueries{
 	
 /** query methods - gera o sql por meio analise morfologica e sintatica**/	
 	
-	List<Restaurante> findByTaxaBetween(BigDecimal taxaInicial,BigDecimal taxaFinal);
+	List<Restaurante> findByTaxaFreteBetween(BigDecimal taxaInicial,BigDecimal taxaFinal);
 	
 	List<Restaurante> findByNomeContainsAndCozinhaId(String nome,Long cozinhaId);
 	
@@ -34,5 +34,5 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long>{
 	/** query methods - gera o sql, analise morfologica e sintatica. 
 	 * ESSA QUERY FOI EXTERNALIZADA PARA O META-INF.orm.xml**/	
 //	@Query("from Restaurante r where nome like %:nome% and r.cozinha.id = :cozinhaId")
-	List<Restaurante> consultarLikeAndCozinhaId(String nome,@Param("cozinhaId") Long cozinhaId);
+	List<Restaurante> consultarLikeAndCozinhaId(String nome,@Param("cozinhaId") Long cozinhaId);	
 }
