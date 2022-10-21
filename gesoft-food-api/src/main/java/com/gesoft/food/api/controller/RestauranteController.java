@@ -62,8 +62,8 @@ public class RestauranteController {
 	}
 
 	@ResponseStatus(value = HttpStatus.OK)
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{RestauranteId}")
-	private ResponseEntity<?> buscar(@PathVariable("RestauranteId") Long restauranteId) {
+	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{restauranteId}")
+	private ResponseEntity<?> buscar(@PathVariable("restauranteId") Long restauranteId) {
 		Optional<Restaurante> restaurante = restauranteService.buscarPorId(restauranteId);
 		if (restaurante.isPresent())
 			return ResponseEntity.ok(restaurante.get());
@@ -93,7 +93,7 @@ public class RestauranteController {
 		if (restauranteAtual.isPresent()) {
 			try {
 				// param >3 inabilita a mudança
-				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id");
+				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id", "formasPagamentos");
 				restauranteService.salvarAtualizar(restauranteAtual.get());
 				return ResponseEntity.ok(restauranteAtual.get());
 			} catch (EntidadeNaoEncontradaException e) {
