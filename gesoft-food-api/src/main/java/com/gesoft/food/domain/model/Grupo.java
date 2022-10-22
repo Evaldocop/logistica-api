@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Entity
@@ -23,6 +25,7 @@ public class Grupo {
 	
 	private String nome;
 	
+	@JsonIgnore
 	@ManyToMany
 	@JoinTable(name = "grupos_permissoes", joinColumns = @JoinColumn(name="grupo_id"),
 	                                       inverseJoinColumns = @JoinColumn(name="restaurante_id"))

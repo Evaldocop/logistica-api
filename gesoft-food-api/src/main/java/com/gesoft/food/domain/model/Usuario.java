@@ -14,6 +14,8 @@ import javax.persistence.ManyToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 
@@ -39,6 +41,7 @@ public class Usuario {
 	@Column(name = "data_cadastro",nullable = false, columnDefinition =  "datetime")
 	private LocalDateTime dataCadastro;
 	
+	@JsonIgnore
 	@ManyToMany
 	@JoinTable(name="usuarios_grupos",joinColumns = @JoinColumn(name = "usuario_id"),
 	                                  inverseJoinColumns = @JoinColumn(name="grupo_id"))
