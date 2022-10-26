@@ -49,30 +49,17 @@ public class EstadoController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{estadoId}")
-	public ResponseEntity<?> alterar(@PathVariable Long estadoId, @RequestBody Estado estado) {
-		Optional<Estado> estadoAtual = estadoService.buscarPorId(estadoId);
+	public Estado alterar(@PathVariable Long estadoId, @RequestBody Estado estado) {
+		Estado estadoAtual = estadoService.buscarPorId(estadoId);
+		BeanUtils.copyProperties(estado, estadoAtual, "id");
+		return estadoService.salvarAtualizar(estadoAtual);
 
-		if (estadoAtual.isPresent()) {
-			BeanUtils.copyProperties(estado, estadoAtual.get(), "id");
-			estadoService.salvarAtualizar(estadoAtual.get());
-			return ResponseEntity.ok(estadoAtual);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
 	}
 
 	@DeleteMapping("/{estadoId}")
-	public ResponseEntity<?> remover(@PathVariable("estadoId") Long estadoId) {
-		try {
-			
-				estadoService.excluir(estadoId);
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-			
-		} catch (EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void remover(@PathVariable("estadoId") Long estadoId) {
+		estadoService.excluir(estadoId);
 
 	}
 

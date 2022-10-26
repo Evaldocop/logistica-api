@@ -33,7 +33,6 @@ public class FormaPagamentoController {
 
 	@Autowired
 	private FormaPagamentoService formaPagamentoService;
-	
 
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	List<FormaPagamento> listar() {
@@ -42,13 +41,9 @@ public class FormaPagamentoController {
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{formaPagamentoId}")
-	private ResponseEntity<?> buscar(@PathVariable("formaPagamentoId") Long formaPagamentoId) {
-		Optional<FormaPagamento> formaPagamento = formaPagamentoService.buscarPorId(formaPagamentoId);
-		if (formaPagamento.isPresent())
-			return ResponseEntity.ok(formaPagamento.get());
-		else
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-					String.format("Forma pagamento com id %d não encontrada", formaPagamentoId));
+	private FormaPagamento buscar(@PathVariable("formaPagamentoId") Long formaPagamentoId) {
+		FormaPagamento formaPagamento = formaPagamentoService.buscarPorId(formaPagamentoId);
+		return formaPagamento;
 	}
 
 	@ResponseStatus(HttpStatus.CREATED)
@@ -60,31 +55,21 @@ public class FormaPagamentoController {
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{formaPagamentoId}")
-	private ResponseEntity<?> atualizar(@PathVariable("formaPagamentoId") Long formaPagamentoId, @RequestBody FormaPagamento formaPagamento) {
-		Optional<FormaPagamento> formaPagamentoAtual = formaPagamentoService.buscarPorId(formaPagamentoId);
+	private FormaPagamento atualizar(@PathVariable("formaPagamentoId") Long formaPagamentoId,
+			@RequestBody FormaPagamento formaPagamento) {
+		FormaPagamento formaPagamentoAtual = formaPagamentoService.buscarPorId(formaPagamentoId);
 
-		if (formaPagamentoAtual.isPresent()) {
-			// param >3 inabilita a mudança
-			BeanUtils.copyProperties(formaPagamento, formaPagamentoAtual.get(), "id");
-			FormaPagamento formaPagamentoSalva=formaPagamentoService.save(formaPagamentoAtual.get());
-			return ResponseEntity.ok(formaPagamentoSalva);
-		} else
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-					String.format("Forma pagamento com id %d não encontrada", formaPagamentoId));
-	
+		// param >3 inabilita a mudança
+		BeanUtils.copyProperties(formaPagamento, formaPagamentoAtual, "id");
+		FormaPagamento formaPagamentoSalva = formaPagamentoService.save(formaPagamentoAtual);
+		return formaPagamentoSalva;
+
 	}
 
 	@DeleteMapping("/{formaPagamentoId}")
-	private ResponseEntity<?> remover(@PathVariable("formaPagamentoId") Long formaPagamentoId) {
-		try {
-		   formaPagamentoService.excluir(formaPagamentoId);
-		   return ResponseEntity.noContent().build();
-		}catch(EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-		}catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
-		
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	private void remover(@PathVariable("formaPagamentoId") Long formaPagamentoId) {
+		formaPagamentoService.excluir(formaPagamentoId);
 	}
 
 }

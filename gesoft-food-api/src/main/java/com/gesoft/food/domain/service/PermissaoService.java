@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.gesoft.food.Constants.ConstantesGesoft;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cidade;
@@ -24,25 +25,27 @@ public class PermissaoService {
 		return permissaoRepository.save(permissao);
 	}
 
-	public void excluir(Long permissaoId) {
-		try { // Cozinha cozinhaBD =estadoRepository.buscarPorId(estadoId);
-
-			permissaoRepository.deleteById(permissaoId);
-		} catch (DataIntegrityViolationException e) {
-			throw new EntidadeEmUsoException(
-					String.format("Permissão de código %d não pode ser removida, pois está em uso.", permissaoId));
-		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(String.format("Permissão com código %d não encontrada.", permissaoId));
-		}
-	}
-
 	public List<Permissao> listar() {
 		// TODO Auto-generated method stub
 		return permissaoRepository.findAll();
 	}
-	
-	public Optional<Permissao> buscarPorId(Long permissaoId) {
-		return permissaoRepository.findById(permissaoId);
+
+	public Permissao buscarPorId(Long permissaoId) {
+		return permissaoRepository.findById(permissaoId).orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Permissao", permissaoId)));
+	}
+
+	public void excluir(Long permissaoId) {
+		try {
+			permissaoRepository.deleteById(permissaoId);
+
+		}catch( DataIntegrityViolationException e){
+			throw new EntidadeEmUsoException(
+				String.format(ConstantesGesoft.ENTIDADE_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO,"Permissao", permissaoId));
+		}catch(EmptyResultDataAccessException e){
+			throw new EntidadeNaoEncontradaException(
+				String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Permissao", permissaoId));
+		}
 	}
 
 }

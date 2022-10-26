@@ -63,13 +63,9 @@ public class RestauranteController {
 
 	@ResponseStatus(value = HttpStatus.OK)
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{restauranteId}")
-	private ResponseEntity<?> buscar(@PathVariable("restauranteId") Long restauranteId) {
-		Optional<Restaurante> restaurante = restauranteService.buscarPorId(restauranteId);
-		if (restaurante.isPresent())
-			return ResponseEntity.ok(restaurante.get());
-		else
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-					String.format("Reataurante com id %d, não foi localizado", restauranteId));
+	private Restaurante buscar(@PathVariable("restauranteId") Long restauranteId) {
+		return restauranteService.buscarPorId(restauranteId);
+		
 	}
 
 	@PostMapping
@@ -86,22 +82,14 @@ public class RestauranteController {
 	}
 
 	@PutMapping("/{restauranteId}")
-	private ResponseEntity<?> alterar(@PathVariable("restauranteId") Long restauranteId,
+	private Restaurante alterar(@PathVariable("restauranteId") Long restauranteId,
 			@RequestBody Restaurante restaurante) {
-		Optional<Restaurante> restauranteAtual = restauranteService.buscarPorId(restauranteId);
-
-		if (restauranteAtual.isPresent()) {
-			try {
-				// param >3 inabilita a mudança
-				BeanUtils.copyProperties(restaurante, restauranteAtual.get(), "id", "formasPagamentos");
-				restauranteService.salvarAtualizar(restauranteAtual.get());
-				return ResponseEntity.ok(restauranteAtual.get());
-			} catch (EntidadeNaoEncontradaException e) {
-				return ResponseEntity.badRequest().body(e.getMessage());
-			}
-		} else
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
+		Restaurante restauranteAtual = restauranteService.buscarPorId(restauranteId);
+		
+		// param >3 inabilita a mudança
+		 BeanUtils.copyProperties(restaurante, restauranteAtual, 
+		            "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
+		return restauranteService.salvarAtualizar(restauranteAtual);
 	}
 	/*
 	 * @ResponseStatus(value = HttpStatus.OK)
@@ -123,16 +111,9 @@ public class RestauranteController {
 	 */
 
 	@DeleteMapping("/{restauranteId}")
-	private ResponseEntity<Restaurante> remover(@PathVariable("restauranteId") Long RestauranteId) {
-		try {
-			restauranteService.excluir(RestauranteId);
-			return ResponseEntity.noContent().build();
-		} catch (EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.notFound().build();
-		}
-
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	private void remover(@PathVariable("restauranteId") Long RestauranteId) {
+				restauranteService.excluir(RestauranteId);
 	}
 	
 	@GetMapping("/primeiroRestaurantePorNome")

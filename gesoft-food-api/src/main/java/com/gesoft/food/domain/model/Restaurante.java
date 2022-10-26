@@ -23,6 +23,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,7 +46,21 @@ public class Restaurante {
 	@Column(name = "taxa_frete", nullable = false)
 	private BigDecimal taxaFrete;
 	
-	@JsonIgnore
+	/*
+	 * No serializer found for class
+	 * org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor and no properties
+	 * discovered to create BeanSerializer (to avoid exception, disable
+	 * SerializationFeature.FAIL_ON_EMPTY_BEANS) (through reference chain:
+	 * com.gesoft.food.domain.model.Restaurante["cozinha"]->com.gesoft.food.domain.
+	 * model.Cozinha$HibernateProxy$kZ7TNW9V["hibernateLazyInitializer"])
+	 * 
+	 * a estratégia lazy gera essa exception, exemplification aula 6.12 time ~13m
+	 * 
+	 */
+	
+	
+	//@JsonIgnore
+	@JsonIgnoreProperties("hibernateLazyInitializer")///
 	@ManyToOne( fetch = FetchType.LAZY) //todo mapeamento terminado em *..toOne* por padrao usa o Eager(ancioso)
 	@JoinColumn(name = "cozinha_id", nullable = false)
 	private Cozinha cozinha;

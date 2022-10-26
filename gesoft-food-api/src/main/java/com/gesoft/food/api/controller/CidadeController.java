@@ -1,7 +1,6 @@
 package com.gesoft.food.api.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,30 +48,17 @@ public class CidadeController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{cidadeId}")
-	public ResponseEntity<?> alterar(@PathVariable Long cidadeId, @RequestBody Cidade cidade) {
-		Optional<Cidade> cidadeAtual = cidadeService.buscarPorId(cidadeId);
+	public Cidade alterar(@PathVariable Long cidadeId, @RequestBody Cidade cidade) {
+		Cidade cidadeAtual = cidadeService.buscarPorId(cidadeId);
+		BeanUtils.copyProperties(cidade, cidadeAtual, "id");
+		return cidadeService.salvarAtualizar(cidadeAtual);
 
-		if (cidadeAtual.isPresent()) {
-			BeanUtils.copyProperties(cidade, cidadeAtual.get(), "id");
-			cidadeService.salvarAtualizar(cidadeAtual.get());
-			return ResponseEntity.ok(cidadeAtual);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
 	}
 
 	@DeleteMapping("/{cidadeId}")
-	public ResponseEntity<?> remover(@PathVariable("cidadeId") Long cidadeId) {
-		try {
-			
-				cidadeService.excluir(cidadeId);
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-			
-		} catch (EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void remover(@PathVariable("cidadeId") Long cidadeId) {
+			cidadeService.excluir(cidadeId);
 
 	}
 

@@ -49,32 +49,19 @@ public class PermissaoController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{permissaoId}")
-	public ResponseEntity<?> alterar(@PathVariable("permissaoId") Long permissaoId, @RequestBody Permissao permissao) {
-		Optional<Permissao> permissaoAtual = permissaoService.buscarPorId(permissaoId);
+	public Permissao alterar(@PathVariable("permissaoId") Long permissaoId, @RequestBody Permissao permissao) {
+		Permissao permissaoAtual = permissaoService.buscarPorId(permissaoId);
 
-		if (permissaoAtual.isPresent()) {
-			BeanUtils.copyProperties(permissao, permissaoAtual.get(), "id");
-			permissaoService.salvarAtualizar(permissaoAtual.get());
-			return ResponseEntity.ok(permissaoAtual.get());
-		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-					String.format("Permissão com id %d não foi localizada", permissaoId));
-		}
+			BeanUtils.copyProperties(permissao, permissaoAtual, "id");
+			Permissao permmissaoSalva = permissaoService.salvarAtualizar(permissaoAtual);
+			return permmissaoSalva;
+		
 	}
 
 	@DeleteMapping("/{permissaoId}")
-	public ResponseEntity<?> remover(@PathVariable("permissaoId") Long permissaoId) {
-		try {
-			
-				permissaoService.excluir(permissaoId);
-				return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-			
-		} catch (EntidadeEmUsoException e) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
-
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void remover(@PathVariable("permissaoId") Long permissaoId) {
+				permissaoService.excluir(permissaoId);	
 	}
 
 }
