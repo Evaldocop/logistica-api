@@ -16,6 +16,8 @@ import com.gesoft.food.domain.reposiory.CozinhaRepository;
 @Service
 public class CozinhaService {
 	
+	private static final String COZINHA_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO = "Cozinha de código %d não pode ser removida, pois está em uso.";
+	private static final String COZINHAN_NAO_ENCONTRADA = "Cozinha com código %d não encontrada.";
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
 	
@@ -25,8 +27,9 @@ public class CozinhaService {
 	}
 	
 	
-	public Optional<Cozinha> buscarPorId(Long id){
-		return cozinhaRepository.findById(id);
+	public Cozinha buscarPorId(Long id){
+		return cozinhaRepository.findById(id).orElseThrow(()->new EntidadeNaoEncontradaException(String.format(
+				COZINHAN_NAO_ENCONTRADA, id)));
 	}
 	public Optional<Cozinha> buscarPorNome(String nome){
 		return cozinhaRepository.findBynome(nome);
@@ -50,10 +53,10 @@ public class CozinhaService {
 				cozinhaRepository.deleteById(cozinhaId);
 		} catch (DataIntegrityViolationException e) {
 				throw new EntidadeEmUsoException(
-						String.format("Cozinha de código %d não pode ser removida, pois está em uso.", cozinhaId));
+						String.format(COZINHA_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO, cozinhaId));
 		}catch(EmptyResultDataAccessException e) {
 			throw new EntidadeNaoEncontradaException(String.format(
-					"Cozinha com código %d não encontrada.", cozinhaId));
+					COZINHAN_NAO_ENCONTRADA, cozinhaId));
 		}
 	}
 
