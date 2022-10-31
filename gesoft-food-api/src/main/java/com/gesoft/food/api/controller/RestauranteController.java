@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
+import com.gesoft.food.domain.exception.NegocioException;
 import com.gesoft.food.domain.model.Restaurante;
 import com.gesoft.food.domain.reposiory.RestauranteRepository;
 import com.gesoft.food.domain.service.RestauranteService;
@@ -68,15 +69,16 @@ public class RestauranteController {
 		
 	}
 
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
-	private ResponseEntity<?> adicionar(@RequestBody Restaurante restaurante) {
+	private Restaurante adicionar(@RequestBody Restaurante restaurante) {
 
 		try {
 			restaurante = restauranteService.salvarAtualizar(restaurante);
-			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+			return restaurante;
 
 		} catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
+			throw new NegocioException(e.getMessage());
 		}
 
 	}
@@ -89,7 +91,14 @@ public class RestauranteController {
 		// param >3 inabilita a mudança
 		 BeanUtils.copyProperties(restaurante, restauranteAtual, 
 		            "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
-		return restauranteService.salvarAtualizar(restauranteAtual);
+		
+		try {
+			return restauranteService.salvarAtualizar(restauranteAtual);
+
+		} catch (EntidadeNaoEncontradaException e) {
+			throw new NegocioException(e.getMessage());
+		}
+
 	}
 	/*
 	 * @ResponseStatus(value = HttpStatus.OK)

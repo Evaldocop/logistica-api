@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
+import com.gesoft.food.domain.exception.NegocioException;
 import com.gesoft.food.domain.model.Cidade;
 import com.gesoft.food.domain.service.CidadeService;
 
@@ -34,6 +35,12 @@ public class CidadeController {
 	private CidadeService cidadeService;
 
 	// por padrao retorna json, mas retorna tbm xml. o op
+	@GetMapping("/{cidadeId}")
+	public Cidade buscarPorId(@PathVariable("cidadeId") Long cidadeId) {
+		return cidadeService.buscarPorId(cidadeId);
+	}
+
+	// por padrao retorna json, mas retorna tbm xml. o op
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<Cidade> listar() {
 		return cidadeService.listar();
@@ -42,23 +49,34 @@ public class CidadeController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public Cidade adicionar(@RequestBody Cidade cidade) {
-		cidade = cidadeService.salvarAtualizar(cidade);
-		return cidade;
+
+		try {
+			cidade = cidadeService.salvarAtualizar(cidade);
+			return cidade;
+
+		} catch (EntidadeNaoEncontradaException e) {
+			throw new NegocioException(e.getMessage());
+		}
+
 	}
 
-	@ResponseStatus(HttpStatus.CREATED)
-	@PutMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{cidadeId}")
+
+	@PutMapping(value = "/{cidadeId}")
 	public Cidade alterar(@PathVariable Long cidadeId, @RequestBody Cidade cidade) {
 		Cidade cidadeAtual = cidadeService.buscarPorId(cidadeId);
 		BeanUtils.copyProperties(cidade, cidadeAtual, "id");
-		return cidadeService.salvarAtualizar(cidadeAtual);
+		try {
+			return cidadeService.salvarAtualizar(cidadeAtual);
+		} catch (EntidadeNaoEncontradaException e) {
+			throw new NegocioException(e.getMessage());
+		}
 
 	}
 
 	@DeleteMapping("/{cidadeId}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable("cidadeId") Long cidadeId) {
-			cidadeService.excluir(cidadeId);
+		cidadeService.excluir(cidadeId);
 
 	}
 

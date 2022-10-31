@@ -1,7 +1,6 @@
 package com.gesoft.food.domain.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,14 +13,22 @@ import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cidade;
 import com.gesoft.food.domain.model.Estado;
 import com.gesoft.food.domain.reposiory.CidadeRepository;
+import com.gesoft.food.domain.reposiory.EstadoRepository;
 
 @Service
 public class CidadeService {
 
 	@Autowired
 	private CidadeRepository cidadeRepository;
+	
+	@Autowired
+	private  EstadoService estadoService;
 
 	public Cidade salvarAtualizar(Cidade cidade) {
+		Long estadoId= cidade.getEstado().getId();
+		Estado estado = estadoService.buscarPorId(estadoId);
+		cidade.setEstado(estado);
+		
 		return cidadeRepository.save(cidade);
 	}
 
