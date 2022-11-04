@@ -2,7 +2,6 @@ package com.gesoft.food.api.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +16,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.exception.NegocioException;
 import com.gesoft.food.domain.model.Restaurante;
-import com.gesoft.food.domain.reposiory.RestauranteRepository;
 import com.gesoft.food.domain.service.RestauranteService;
 
 //GET /Restaurantes HTTP 1.1

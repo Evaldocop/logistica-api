@@ -8,12 +8,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.gesoft.food.Constants.ConstantesGesoft;
+import com.gesoft.food.domain.exception.CidadeNaoEncontradaException;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
-import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
+import com.gesoft.food.domain.exception.EstadoNaoEncontradaException;
 import com.gesoft.food.domain.model.Cidade;
 import com.gesoft.food.domain.model.Estado;
 import com.gesoft.food.domain.reposiory.CidadeRepository;
-import com.gesoft.food.domain.reposiory.EstadoRepository;
 
 @Service
 public class CidadeService {
@@ -25,6 +25,8 @@ public class CidadeService {
 	private  EstadoService estadoService;
 
 	public Cidade salvarAtualizar(Cidade cidade) {
+		if(cidade.getEstado()==null)
+			throw new EstadoNaoEncontradaException("Estado não informado!");
 		Long estadoId= cidade.getEstado().getId();
 		Estado estado = estadoService.buscarPorId(estadoId);
 		cidade.setEstado(estado);
@@ -37,9 +39,8 @@ public class CidadeService {
 		return cidadeRepository.findAll();
 	}
 
-	public Cidade buscarPorId(Long id) {
-		return cidadeRepository.findById(id).orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Cidade", id)));
+	public Cidade buscarPorId(Long cidadeId) {
+		return cidadeRepository.findById(cidadeId).orElseThrow(() -> new  CidadeNaoEncontradaException(cidadeId));
 	}
 
 	public void excluir(Long cidadeId) {
@@ -48,10 +49,9 @@ public class CidadeService {
 			cidadeRepository.deleteById(cidadeId);
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-					String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Cidade", cidadeId));
+					String.format(ConstantesGesoft.ENTIDADE_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO, "Cidade", cidadeId));
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(
-					String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Cidade", cidadeId));
+			throw new  CidadeNaoEncontradaException(cidadeId);
 		}
 	}
 

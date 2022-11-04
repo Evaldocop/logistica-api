@@ -9,8 +9,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.gesoft.food.Constants.ConstantesGesoft;
+import com.gesoft.food.domain.exception.CozinhaNaoEncontradaException;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
-import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cozinha;
 import com.gesoft.food.domain.reposiory.CozinhaRepository;
 
@@ -26,9 +26,8 @@ public class CozinhaService {
 	}
 	
 	
-	public Cozinha buscarPorId(Long id){
-		return cozinhaRepository.findById(id).orElseThrow(()->new EntidadeNaoEncontradaException(String.format(
-				ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA,"Cozinha", id)));
+	public Cozinha buscarPorId(Long cozinhaId){
+		return cozinhaRepository.findById(cozinhaId).orElseThrow(()->new CozinhaNaoEncontradaException(cozinhaId));
 	}
 	public Optional<Cozinha> buscarPorNome(String nome){
 		return cozinhaRepository.findBynome(nome);
@@ -54,8 +53,7 @@ public class CozinhaService {
 				throw new EntidadeEmUsoException(
 						String.format(ConstantesGesoft.ENTIDADE_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO,"Cozinha", cozinhaId));
 		}catch(EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(String.format(
-					ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA,"Cozinha", cozinhaId));
+			throw  new CozinhaNaoEncontradaException( cozinhaId);
 		}
 	}
 

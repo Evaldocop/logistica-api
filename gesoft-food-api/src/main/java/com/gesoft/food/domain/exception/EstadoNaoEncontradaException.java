@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.gesoft.food.Constants.ConstantesGesoft;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public abstract class EntidadeNaoEncontradaException extends NegocioException /*ResponseStatusException */{
+public class EstadoNaoEncontradaException extends EntidadeNaoEncontradaException /*ResponseStatusException */{
 	private static final long serialVersionUID = 1L;
+	
+	private static String NAME_CLASS_ESTADO=" ESTADO ";
 	
 	/*
 	 * public EntidadeNaoEncontradaException(HttpStatus status,String message) {
@@ -16,13 +18,12 @@ public abstract class EntidadeNaoEncontradaException extends NegocioException /*
 	 * public EntidadeNaoEncontradaException(String message) {
 	 * super(HttpStatus.CONFLICT,message); }
 	 */
-	public EntidadeNaoEncontradaException(String message) {
+	public EstadoNaoEncontradaException(String message) {
 		super(message);
 	}
 	
-	
-	public EntidadeNaoEncontradaException(String entityName, Long classId) {
-		this(String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, entityName, classId));
+	public EstadoNaoEncontradaException(Long classId) {
+		this(String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, NAME_CLASS_ESTADO, classId));
 	}
 	
 }

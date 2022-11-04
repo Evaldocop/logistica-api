@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gesoft.food.domain.exception.EntidadeEmUsoException;
-import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.model.Cozinha;
 import com.gesoft.food.domain.service.CozinhaService;
 

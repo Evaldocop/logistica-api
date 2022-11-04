@@ -1,7 +1,6 @@
 package com.gesoft.food.domain.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.gesoft.food.Constants.ConstantesGesoft;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
-import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
-import com.gesoft.food.domain.model.Cidade;
+import com.gesoft.food.domain.exception.PermissaoNaoEncontradaException;
 import com.gesoft.food.domain.model.Permissao;
 import com.gesoft.food.domain.reposiory.PermissaoRepository;
 
@@ -31,8 +29,7 @@ public class PermissaoService {
 	}
 
 	public Permissao buscarPorId(Long permissaoId) {
-		return permissaoRepository.findById(permissaoId).orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Permissao", permissaoId)));
+		return permissaoRepository.findById(permissaoId).orElseThrow(() -> new PermissaoNaoEncontradaException(permissaoId));
 	}
 
 	public void excluir(Long permissaoId) {
@@ -43,8 +40,7 @@ public class PermissaoService {
 			throw new EntidadeEmUsoException(
 				String.format(ConstantesGesoft.ENTIDADE_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO,"Permissao", permissaoId));
 		}catch(EmptyResultDataAccessException e){
-			throw new EntidadeNaoEncontradaException(
-				String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Permissao", permissaoId));
+			throw new PermissaoNaoEncontradaException(permissaoId);
 		}
 	}
 

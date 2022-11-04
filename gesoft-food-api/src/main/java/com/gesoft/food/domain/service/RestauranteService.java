@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.gesoft.food.Constants.ConstantesGesoft;
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
-import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
+import com.gesoft.food.domain.exception.RestauranteNaoEncontradaException;
 import com.gesoft.food.domain.model.Cozinha;
 import com.gesoft.food.domain.model.Restaurante;
 import com.gesoft.food.domain.reposiory.RestauranteRepository;
@@ -49,8 +49,7 @@ public class RestauranteService {
 	}
 
 	public Restaurante buscarPorId(Long restauranteId) {
-		return restauranteRepository.findById(restauranteId).orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Cozinha", restauranteId)));
+		return restauranteRepository.findById(restauranteId).orElseThrow(() -> new RestauranteNaoEncontradaException( restauranteId));
 	}
 
 	public Optional<Restaurante> findFirstRestauranteByNomeContains(String nome) {
@@ -83,8 +82,7 @@ public class RestauranteService {
 			throw new EntidadeEmUsoException(String
 					.format(ConstantesGesoft.ENTIDADE_NAO_PODE_SER_REMOVIDA_POIS_ESTA_EM_USO, "Restaurante", restauranteId));
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException(
-					String.format(ConstantesGesoft.ENTIDADE_NAO_ENCONTRADA, "Restaurante", restauranteId));
+			throw new RestauranteNaoEncontradaException(restauranteId);
 		}
 	}
 }
