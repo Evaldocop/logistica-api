@@ -2,19 +2,27 @@ package com.gesoft.food.api.execeptionhandler;
 
 import java.time.LocalDateTime;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.WebUtils;
 
 import com.gesoft.food.domain.exception.EntidadeEmUsoException;
 import com.gesoft.food.domain.exception.EntidadeNaoEncontradaException;
 import com.gesoft.food.domain.exception.NegocioException;
+/*
+ATENCAO
+centraliza tratamento de exception handler - 
+ResponseEntityExceptionHandler trata exceptions padrao spring */
 
-//ATENCAO
-@ControllerAdvice // centraliza tratamento de exception handler
-public class ApiExceptionHandler {
+@ControllerAdvice
+public class ApiExceptionHandler extends ResponseEntityExceptionHandler{
 	@ExceptionHandler(EntidadeNaoEncontradaException.class)
 	public ResponseEntity<?> tratarEntidadeNaoEncontradaException(EntidadeNaoEncontradaException e) {
 		Problema problema = Problema.builder()
@@ -23,6 +31,8 @@ public class ApiExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problema);
 	}
+	
+	
 	@ExceptionHandler(EntidadeEmUsoException.class)
 	public ResponseEntity<?> tratarEntidadeEmUsoException(EntidadeEmUsoException e) {
 		Problema problema = Problema.builder()
@@ -42,14 +52,16 @@ public class ApiExceptionHandler {
 	}
 	
 	
-	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-	public ResponseEntity<?> tratarHttpMediaTypeNotSupportedException() {
-		Problema problema = Problema.builder()
+	protected ResponseEntity<Object> handleExceptionInternal(
+			Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        body = Problema.builder()
 				.dataHora(LocalDateTime.now())
-				.mensagem("O tipo de mídia não é aceito.").build();
+				.mensagem(status.getReasonPhrase())
+				.build();
 		
-		return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-				.body(problema);
+		return new ResponseEntity<>(body, headers, status);
 	}
+
+	
 
 }
