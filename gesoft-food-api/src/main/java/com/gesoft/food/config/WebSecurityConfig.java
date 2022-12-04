@@ -33,13 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 	
 	
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-	
-	}
-	
+
 	
 	protected void configure(HttpSecurity http) throws Exception{
 		
@@ -47,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// linguagem fluida 
 			http.httpBasic()
 			.and()///.formLogin() como é ume api n precisa de login page
-			.authorizeHttpRequests()
+			.authorizeRequests()
 			    .antMatchers("/cozinhas/**").permitAll() 
 			    .anyRequest().authenticated()
 			.and()
@@ -62,5 +56,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			*/
 			      .csrf().disable();
 	}
-
+	
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+	
+	}
+	
 }
