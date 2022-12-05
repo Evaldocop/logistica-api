@@ -9,47 +9,44 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
-
+import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 
 @Configuration
 @EnableAuthorizationServer
-public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
+public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
-	private AuthenticationManager  authenticationManager;
-	
+	private AuthenticationManager authenticationManager;
+
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-	
-		clients
-			.inMemory()
+
+		clients.inMemory()
 				/*
-				 * credenciais da appLogin se comuinicar com o AuthorizatioServer 
-				 * Não confundir com as crdenciais do owner(prtado do acesso ao resource server)
+				 * credenciais da appLogin se comuinicar com o AuthorizatioServer Não confundir
+				 * com as crdenciais do owner(prtado do acesso ao resource server)
 				 * 
-				 *  */
-				.withClient("gesoftfood-web")
-			    .secret(passwordEncoder.encode("20131show"))
-			    .authorizedGrantTypes("password")
-			    .scopes("write", "read")
-			    ///inspira em 1h
-			    .accessTokenValiditySeconds(60*60*1)
-			.and()
-				.withClient("gesoftfood-mob")
-			    .secret(passwordEncoder.encode("20131show"))
-			    .authorizedGrantTypes("password")
-			    .scopes("write", "read");
-				
+				 */
+				.withClient("gesoftfood-web").secret(passwordEncoder.encode("20131show"))
+				.authorizedGrantTypes("password").scopes("write", "read")
+				/// inspira em 1h
+				.accessTokenValiditySeconds(60 * 60 * 1).and().withClient("gesoftfood-mob")
+				.secret(passwordEncoder.encode("20131show")).authorizedGrantTypes("password").scopes("write", "read");
+
 	}
-	
+
+	@Override
+	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+		//expression spring - 
+		security.checkTokenAccess("isAuthenticated()");
+	}
+
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		endpoints.authenticationManager(authenticationManager);
 	}
-	
-	
-	
+
 }
