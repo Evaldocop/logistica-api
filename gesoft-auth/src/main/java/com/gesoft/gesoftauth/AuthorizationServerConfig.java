@@ -30,7 +30,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 				 * com as crdenciais do owner(prtado do acesso ao resource server)
 				 * 
 				 */
-				.withClient("gesoftfood-web").secret(passwordEncoder.encode("20131show"))
+				.withClient("gesoftfood-web")
+				 .secret(passwordEncoder.encode("20131show"))
 				.authorizedGrantTypes("password").scopes("write", "read")
 				/// inspira em 1h
 				.accessTokenValiditySeconds(60 * 60 * 1).and().withClient("gesoftfood-mob")
@@ -40,8 +41,16 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-		//expression spring - 
+		/*
+		 * expression spring sec(isAuthenticated()) - confirma validade do token
+		 *  entre o appClient e recursos
+		 */
 		security.checkTokenAccess("isAuthenticated()");
+		/*
+		 * expression spring sec(permitedAll()) - descarta atutenticação dr validade do token
+		 *  entre o appClient e recursos
+		 */
+		security.checkTokenAccess("permitedAll()");
 	}
 
 	@Override
