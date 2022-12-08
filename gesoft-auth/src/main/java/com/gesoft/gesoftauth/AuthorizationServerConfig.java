@@ -32,9 +32,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 				 */
 				.withClient("gesoftfood-web")
 				 .secret(passwordEncoder.encode("20131show"))
-				.authorizedGrantTypes("password").scopes("write", "read")
+				.authorizedGrantTypes("password", "refresh_token").scopes("write", "read")
 				/// inspira em 1h
-				.accessTokenValiditySeconds(60 * 60 * 1).and().withClient("gesoftfood-mob")
+				.accessTokenValiditySeconds(60 * 60 * 6).and().withClient("gesoftfood-mob")
 				.secret(passwordEncoder.encode("20131show")).authorizedGrantTypes("password").scopes("write", "read");
 
 	}
@@ -45,12 +45,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		 * expression spring sec(isAuthenticated()) - confirma validade do token
 		 *  entre o appClient e recursos
 		 */
-		security.checkTokenAccess("isAuthenticated()");
+		//security.checkTokenAccess("isAuthenticated()");
 		/*
-		 * expression spring sec(permitedAll()) - descarta atutenticação dr validade do token
+		 * expression spring sec(permitedAll()) - descarta atutenticação de validade do token
 		 *  entre o appClient e recursos
 		 */
-		security.checkTokenAccess("permitedAll()");
+		security.checkTokenAccess("permitAll()");
 	}
 
 	@Override

@@ -15,9 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 	
-	
+	/* 06-12 - Nao precisa quem faz a autenticacao eh o AuthorizationServer
 	
 	// configuração de usuários em memoria
 	//buider
@@ -32,35 +32,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	        .roles("ADMIN");
 	}
 	
-	
+	*/
 
-	
+	//OpaqueToken
 	protected void configure(HttpSecurity http) throws Exception{
 		
 		
 		// linguagem fluida 
-			http.httpBasic()
-			.and()///.formLogin() como é ume api n precisa de login page
+			http
 			.authorizeRequests()
-			    .antMatchers("/cozinhas/**").permitAll() 
+			 
 			    .anyRequest().authenticated()
 			.and()
-			   .sessionManagement()
-			      ///sevidor nao mantem session, cookes
-			      .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			.and()
-			/**   This is activated by default when using EnableWebSecurity's 
-			      CSFR-Cross-Site Request Forgery -  Falsificação de solicitação entre sites
-			      csfr tipo de ataque em requisições entre sites tentando alcançar usuarios autenticados
-			      e usar essa credenciais de maneira frauduluenta
-			*/
-			      .csrf().disable();
+			   .oauth2ResourceServer().opaqueToken();
 	}
+	
+	/* 06-12 - Nao precisa quem faz a autenticacao eh o AuthorizationServer
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
 	
 	}
+	*/
 	
 }
