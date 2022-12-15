@@ -24,18 +24,25 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
-		clients.inMemory()
+		clients
+		      .inMemory()
 				/*
 				 * credenciais da appLogin se comuinicar com o AuthorizatioServer Não confundir
 				 * com as crdenciais do owner(prtado do acesso ao resource server)
 				 * 
 				 */
-				.withClient("gesoftfood-web")
+					.withClient("gesoftfood-web")
+				    .secret(passwordEncoder.encode("20131show"))
+					.authorizedGrantTypes("password", "refresh_token").scopes("write", "read")
+					/// inspira em 1h
+					.accessTokenValiditySeconds(60 * 60 * 6).and().withClient("gesoftfood-mob")
+					.secret(passwordEncoder.encode("20131show")).authorizedGrantTypes("password").scopes("write", "read")
+				.and()
+					.withClient("foodnanalytics")
 				 .secret(passwordEncoder.encode("20131show"))
-				.authorizedGrantTypes("password", "refresh_token").scopes("write", "read")
-				/// inspira em 1h
-				.accessTokenValiditySeconds(60 * 60 * 6).and().withClient("gesoftfood-mob")
-				.secret(passwordEncoder.encode("20131show")).authorizedGrantTypes("password").scopes("write", "read");
+					.authorizedGrantTypes("authorization_code")
+					.scopes("write", "read")
+					.redirectUris("http://aplicacao-cliente");
 
 	}
 
