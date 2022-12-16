@@ -1,15 +1,22 @@
 package com.gesoft.gesoftauth;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.CompositeTokenGranter;
+import org.springframework.security.oauth2.provider.TokenGranter;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 @Configuration
 @EnableAuthorizationServer
@@ -20,6 +27,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	
+
+	
+	@Autowired(required = false)
+	private UserDetailsService userDetailsService;
+	
+	@Autowired
+	private RedisConnectionFactory redisConnectionFactory;
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -42,6 +57,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 				 .secret(passwordEncoder.encode("20131show"))
 					.authorizedGrantTypes("authorization_code")
 					.scopes("write", "read")
+					.redirectUris("http://aplicacao-cliente")
+					.and()
+					.withClient("webadmin")
+     		  /*>>*/.authorizedGrantTypes("implicit")
+					.scopes("write", "read")
 					.redirectUris("http://aplicacao-cliente");
 
 	}
@@ -57,12 +77,45 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		 * expression spring sec(permitedAll()) - descarta atutenticação de validade do token
 		 *  entre o appClient e recursos
 		 */
-		security.checkTokenAccess("permitAll()");
+		security.checkTokenAccess("permitAll()").allowFormAuthenticationForClients();
 	}
 
+	/*
+	 * @Override public void configure(AuthorizationServerEndpointsConfigurer
+	 * endpoints) throws Exception {
+	 * endpoints.authenticationManager(authenticationManager); }
+	 */
+	
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-		endpoints.authenticationManager(authenticationManager);
+		endpoints
+			.authenticationManager(authenticationManager)
+			.userDetailsService(userDetailsService)
+			.reuseRefreshTokens(false)
+			.tokenStore(redisTokenStore())
+			.tokenGranter(tokenGranter(endpoints));
 	}
-
+	
+	private TokenStore redisTokenStore() {
+		return new RedisTokenStore(redisConnectionFactory);
+	}
+	
+	private TokenGranter tokenGranter(AuthorizationServerEndpointsConfigurer endpoints) {
+		var pkceAuthorizationCodeTokenGranter = new PkceAuthorizationCodeTokenGranter(endpoints.getTokenServices(),
+				endpoints.getAuthorizationCodeServices(), endpoints.getClientDetailsService(),
+				endpoints.getOAuth2RequestFactory());
+		
+		var granters = Arrays.asList(
+				pkceAuthorizationCodeTokenGranter, endpoints.getTokenGranter());
+		
+		return new CompositeTokenGranter(granters);
+	}
+	
+	 
+	/*public JwtAccessTokenConverter  jwtAccessTokenConverter() {
+		JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
+		jwtAccessTokenConverter.setSigningKey("20131show");
+		return jwtAccessTokenConverter;
+		
+	}*/
 }
