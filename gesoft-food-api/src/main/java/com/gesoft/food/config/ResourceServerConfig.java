@@ -53,12 +53,11 @@ public class ResourceServerConfig extends WebSecurityConfigurerAdapter {
 			   .oauth2ResourceServer().jwt();
 	}
 	
-	@Bean
-	public JwtDecoder jwtDecoder() {
-		var secretKey = new SecretKeySpec("20131show20131show20131show20131show20131show".getBytes(), "HmacSHA256");
-		return NimbusJwtDecoder.withSecretKey(secretKey).build();
-	}
-	
+	/*
+	 * @Bean public JwtDecoder jwtDecoder() { var secretKey = new
+	 * SecretKeySpec("20131show20131show20131show20131show20131show".getBytes(),
+	 * "HmacSHA256"); return NimbusJwtDecoder.withSecretKey(secretKey).build(); }
+	 */
 	/* 06-12 - Nao precisa quem faz a autenticacao eh o AuthorizationServer
 	
 	@Bean

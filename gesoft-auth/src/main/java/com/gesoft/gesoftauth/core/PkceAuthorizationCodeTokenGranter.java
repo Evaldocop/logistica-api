@@ -1,4 +1,4 @@
-package com.gesoft.gesoftauth;
+package com.gesoft.gesoftauth.core;
 
 
 

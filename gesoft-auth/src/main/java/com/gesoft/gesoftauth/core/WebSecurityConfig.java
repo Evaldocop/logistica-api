@@ -1,4 +1,4 @@
-package com.gesoft.gesoftauth;
+package com.gesoft.gesoftauth.core;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
